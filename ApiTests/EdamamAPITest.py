@@ -1,10 +1,14 @@
 from fastapi import FastAPI
 import requests
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 app = FastAPI()
 
-app_id = "0e3eddce"
-app_key = "f763e8664b4279d4f3598dff84190c29"
+app_id = os.getenv("app_id")
+app_key = os.getenv("app_key")
+print(app_id, app_key)
 
 def api_tester(query: str) :
     url = f"https://api.edamam.com/search?q={query}&app_id={app_id}&app_key={app_key}"
