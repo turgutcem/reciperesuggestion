@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="49fd6d93-1526-4051-843c-5fb00a94c35c" name="Changes" comment="Reorganizing the codebase to make it easier to maintain">
+    <list default="true" id="49fd6d93-1526-4051-843c-5fb00a94c35c" name="Changes" comment="EdamamAPI-Discovery.ipynb file added to api discovery folder.">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,12 +51,13 @@
     "com.codeium.enabled": "true",
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/turgu/PycharmProjects/RecipeSuggestionProject",
+    "last_opened_file_path": "C:/Users/turgu/PycharmProjects/RecipeSuggestionProject/ApiTests",
     "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\turgu\PycharmProjects\RecipeSuggestionProject\ApiTests" />
       <recent name="C:\Users\turgu\PycharmProjects\RecipeSuggestionProject" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -102,7 +104,15 @@
       <option name="project" value="LOCAL" />
       <updated>1729434424158</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="EdamamAPI-Discovery.ipynb file added to api discovery folder.">
+      <option name="closed" value="true" />
+      <created>1729715426663</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1729715426663</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -119,6 +129,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Good first commit" />
     <MESSAGE value="Reorganizing the codebase to make it easier to maintain" />
-    <option name="LAST_COMMIT_MESSAGE" value="Reorganizing the codebase to make it easier to maintain" />
+    <MESSAGE value="EdamamAPI-Discovery.ipynb file added to api discovery folder." />
+    <option name="LAST_COMMIT_MESSAGE" value="EdamamAPI-Discovery.ipynb file added to api discovery folder." />
   </component>
 </project>
