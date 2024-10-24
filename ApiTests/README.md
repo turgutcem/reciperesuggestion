@@ -23,3 +23,4 @@ The data is collected from the Edamam Recipe Search API. You can find more infor
 - Ensure you have the necessary libraries installed (`requests`, `json`, `pandas`, `json_normalize`).
 - Replace the placeholder values for `app_id` and `app_key` with your actual Edamam API credentials.
 - Execute the code step-by-step in a Google Colab or Jupyter Notebook environment to fetch and process the data.
+- For some reason I don't know , Github does not render Jupyter notebooks correctly. But it is possible to reach it via : https://colab.research.google.com/drive/1X_jfKiuP6Oitx0LTKfIIpJtGBv3fMqqI?usp=sharing.
