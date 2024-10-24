@@ -16,7 +16,7 @@ Additional parameters like `diet`, `health`, `cuisineType`, and `mealType` are u
 
 ## Data Source
 
-The data is collected from the Edamam Recipe Search API. You can find more information about the API and how to obtain your application ID and key on the Edamam website. Replace the placeholders for `app_id` and `app_key` in the script with your actual credentials.
+The data is collected from the Edamam Recipe Search API. You can find more information about the API and how to obtain your application ID and key on the Edamam website, [here](https://developer.edamam.com/edamam-docs-recipe-api). Replace the placeholders for `app_id` and `app_key` in the script with your actual credentials.
 
 **Note**:
 
