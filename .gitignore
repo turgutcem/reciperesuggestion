@@ -1,1 +1,4 @@
 .env
+*.pt
+*.safetensors
+Recipes_Ingredients/llama-exploration/smart_tag_groups.json
