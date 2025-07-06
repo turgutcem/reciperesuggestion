@@ -1,0 +1,208 @@
+TAG_GROUPS = {
+    "TIME_DURATION": [
+        '15-minutes-or-less', '30-minutes-or-less', '60-minutes-or-less', 
+        '4-hours-or-less', '1-day-or-more'
+    ],
+    
+    "COMPLEXITY_EASE": [
+        '3-steps-or-less', '5-ingredients-or-less', 'easy', 'beginner-cook',
+        'for-1-or-2', 'for-large-groups', 'one-dish-meal', 'from-scratch'
+    ],
+    
+    "DIETARY_RESTRICTIONS": [
+        'vegan', 'vegetarian', 'gluten-free', 'dairy-free', 'egg-free', 
+        'nut-free', 'lactose', 'kosher', 'diabetic', 'no-shell-fish'
+    ],
+    
+    "HEALTH_NUTRITION": [
+        'healthy', 'healthy-2', 'low-calorie', 'low-carb', 'low-cholesterol',
+        'low-fat', 'low-protein', 'low-saturated-fat', 'low-sodium', 
+        'high-calcium', 'high-fiber', 'high-protein', 'very-low-carbs'
+    ],
+    
+    "CUISINES": [
+        'african', 'american', 'asian', 'australian', 'austrian', 'belgian',
+        'brazilian', 'british-columbian', 'cajun', 'californian', 'cambodian',
+        'canadian', 'cantonese', 'caribbean', 'central-american', 'chilean',
+        'chinese', 'colombian', 'congolese', 'costa-rican', 'creole', 'cuban',
+        'czech', 'danish', 'dutch', 'ecuadorean', 'egyptian', 'english',
+        'ethiopian', 'european', 'filipino', 'finnish', 'french', 'georgian',
+        'german', 'greek', 'guatemalan', 'hawaiian', 'honduran', 'hungarian',
+        'icelandic', 'indian', 'indonesian', 'iranian-persian', 'iraqi', 'irish',
+        'italian', 'japanese', 'jewish-ashkenazi', 'jewish-sephardi', 'korean',
+        'laotian', 'lebanese', 'libyan', 'malaysian', 'mexican', 'middle-eastern',
+        'mongolian', 'moroccan', 'namibian', 'native-american', 'nepalese',
+        'new-zealand', 'nigerian', 'north-american', 'norwegian', 'oaxacan',
+        'pakistani', 'palestinian', 'pennsylvania-dutch', 'peruvian', 'polish',
+        'polynesian', 'portuguese', 'puerto-rican', 'russian', 'saudi-arabian',
+        'scandinavian', 'scottish', 'somalian', 'soul', 'south-african',
+        'south-american', 'south-west-pacific', 'spanish', 'sudanese', 'swedish',
+        'swiss', 'thai', 'turkish', 'venezuelan', 'vietnamese', 'welsh',
+        'amish-mennonite', 'angolan', 'argentine', 'baja', 'beijing', 'hunan',
+        'midwestern', 'northeastern-united-states', 'southern-united-states',
+        'southwestern-united-states', 'ontario', 'pacific-northwest', 'quebec',
+        'szechuan', 'tex-mex'
+    ],
+    
+    "MEAL_TYPES": [
+        'appetizers', 'breakfast', 'brunch', 'lunch', 'dinner-party', 
+        'desserts', 'snacks', 'beverages', 'cocktails', 'main-dish'
+    ],
+    
+    "PROTEINS": [
+        'beef', 'chicken', 'pork', 'lamb-sheep', 'turkey', 'duck','eggs', 'soy-tofu', 'tempeh', 'beans',
+        'beef-liver', 'beef-organ-meats', 'chicken-breasts', 'chicken-livers',
+        'chicken-thighs-legs', 'duck-breasts', 'ground-beef', 'ham', 'veal',
+        'whole-chicken', 'whole-duck', 'whole-turkey', 'turkey-breasts', 'goose'
+    ],
+    
+    "SEAFOOD_FISH": [
+        'bass', 'catfish', 'clams', 'cod', 'crab', 'crawfish', 'halibut',
+        'lobster', 'mahi-mahi', 'mussels', 'octopus', 'orange-roughy', 'oysters',
+        'perch', 'pickeral', 'salmon', 'scallops', 'shrimp', 'sole-and-flounder',
+        'squid', 'tilapia', 'trout', 'tuna', 'whitefish', 'freshwater-fish',
+        'saltwater-fish','fish','seafood', 'shellfish',
+    ],
+    
+    "VEGETABLES": [
+        'artichoke', 'asparagus', 'avocado', 'bok-choys', 'broccoli', 'cabbage',
+        'carrots', 'cauliflower', 'chard', 'collard-greens', 'corn', 'eggplant',
+        'green-yellow-beans', 'greens', 'lettuces', 'mushrooms', 'onions', 'peppers',
+        'potatoes', 'spinach', 'squash', 'tomatoes', 'yams-sweet-potatoes', 'zucchini'
+    ],
+    
+    "FRUITS": [
+        'apples', 'bananas', 'berries', 'blueberries', 'cherries', 'citrus',
+        'coconut', 'grapes', 'kiwifruit', 'lemon', 'lime', 'mango', 'melons',
+        'oranges', 'papaya', 'peaches', 'pears', 'pineapple', 'plums',
+        'raspberries', 'strawberries', 'tropical-fruit', 'pumpkin', 'fruit'
+    ],
+    
+    "GRAINS_PASTA": [
+        'pasta', 'rice', 'grains', 'brown-rice', 'white-rice', 'long-grain-rice',
+        'medium-grain-rice', 'short-grain-rice', 'elbow-macaroni', 'penne',
+        'spaghetti', 'lasagna', 'manicotti', 'ravioli-tortellini', 'pasta-shells',
+        'pasta-elbow-macaroni', 'flat-shapes'
+    ],
+    
+    "COOKING_METHODS": [
+        'baking', 'barbecue', 'broil', 'deep-fry', 'grilling', 'oven', 'roast',
+        'steam', 'stir-fry', 'stove-top', 'no-cook'
+    ],
+    
+    "EQUIPMENT_APPLIANCES": [
+        'bread-machine', 'crock-pot-slow-cooker', 'dehydrator', 'food-processor-blender',
+        'freezer', 'microwave', 'mixer', 'pressure-cooker', 'refrigerator',
+        'small-appliance', 'smoker', 'crock-pot-main-dish'
+    ],
+    
+    "OCCASIONS_HOLIDAYS": [
+        'april-fools-day', 'birthday', 'christmas', 'cinco-de-mayo', 'easter',
+        'fathers-day', 'fourth-of-july', 'halloween', 'hanukkah', 'independence-day',
+        'irish-st-patricks-day', 'kwanzaa', 'labor-day', 'mardi-gras-carnival',
+        'memorial-day', 'mothers-day', 'new-years', 'passover', 'ramadan',
+        'rosh-hashana', 'rosh-hashanah', 'st-patricks-day', 'super-bowl',
+        'superbowl', 'thanksgiving', 'valentines-day', 'wedding', 'chinese-new-year',
+        'holiday-event'
+    ],
+    
+    "SEASONS": [
+        'fall', 'spring', 'summer', 'winter'
+    ],
+    
+    "DISH_TYPES": [
+        'breads', 'cakes', 'casseroles', 'chili', 'chowders', 'cookies-and-brownies',
+        'cupcakes', 'curries', 'dips', 'finger-food', 'fudge', 'ice-cream', 'jellies',
+        'jams-and-preserves', 'meatballs', 'meatloaf', 'muffins', 'omelets-and-frittatas',
+        'pancakes-and-waffles', 'pies', 'pizza', 'pot-pie', 'pot-roast', 'puddings-and-mousses',
+        'quiche', 'salads', 'sandwiches', 'sauces', 'smoothies', 'soups-stews',
+        'stews', 'stuffings-dressings', 'tarts', 'wings'
+    ],
+    
+    "SPECIFIC_DISHES": [
+        'biscotti', 'brownies', 'burgers', 'cheesecake', 'chocolate-chip-cookies',
+        'cobblers-and-crisps', 'coffee-cakes', 'drop-cookies', 'gumbo',
+        'hand-formed-cookies', 'macaroni-and-cheese', 'margarita', 'rolled-cookies',
+        'sugar-cookies', 'turkey-burgers', 'veggie-burgers'
+    ],
+    
+    "SOUPS": [
+        'bean-soup', 'bisques-cream-soups', 'clear-soups', 'navy-bean-soup',
+        'potato-soup', 'beans-soups'
+    ],
+    
+    "BAKED_GOODS": [
+        'bar-cookies', 'bread-pudding', 'crusts-pastry-dough-2', 'lemon-cake',
+        'pies-and-tarts', 'pumpkin-bread', 'quick-breads', 'rolls-biscuits',
+        'savory-pies', 'scones', 'sourdough', 'yeast', 'cookies-and-brownies-nuts'
+    ],
+    
+    "INGREDIENTS_MISC": [
+        'a1-sauce', 'bacon', 'black-beans', 'cheese', 'chick-peas-garbanzos',
+        'chocolate', 'hidden-valley-ranch', 'lentils', 'nuts', 'oatmeal',
+        'peanut-butter', 'pitted-fruit', 'prepared-potatoes', 'simply-potatoes',
+        'simply-potatoes2', 'stocks'
+    ],
+    
+    "SPECIAL_CATEGORIES": [
+        'brown-bag', 'camping', 'college', 'comfort-food', 'copycat',
+        'gifts', 'heirloom-historical', 'heirloom-historical-recipes', 'inexpensive',
+        'kid-friendly', 'leftovers', 'novelty', 'oamc-freezer-make-ahead', 'picnic',
+        'potluck', 'romantic', 'toddler-friendly', 'weeknight', 'infant-baby-friendly'
+    ],
+    
+    "PREPARATION_STYLES": [
+        'casseroles-one-dish-meal', 'served-cold', 'served-hot', 'spicy', 'sweet',
+        'savory', 'bizarre'
+    ],
+    
+    "CONDIMENTS_SAUCES": [
+        'beef-sauces', 'chutneys', 'condiments-etc', 'dips-lunch-snacks',
+        'fillings-and-frostings-chocolate', 'fillings-and-frostings-fruit',
+        'garnishes', 'marinades-and-rubs', 'salad-dressings', 'salsas',
+        'spaghetti-sauce', 'spreads', 'spreads-fruit', 'sweet-sauces',
+        'savory-sauces', 'cake-fillings-and-frostings'
+    ],
+    
+    "BEVERAGES_DRINKS": [
+        'brewing', 'non-alcoholic', 'punch', 'shakes'
+    ],
+    
+    "PROCESSING_PRESERVATION": [
+        'canning', 'pressure-canning', 'unprocessed-freezer', 'water-bath'
+    ],
+    
+    "WILD_GAME": [
+        'bear', 'deer', 'elk', 'moose', 'pheasant', 'quail', 'rabbit', 'wild-game'
+    ],
+    
+    "MISC_MEAT_CUTS": [
+        'beef-ribs', 'beef-sausage', 'brisket', 'pork-chops', 'pork-loins',
+        'pork-ribs', 'pork-sausage', 'roast-beef', 'roast-beef-comfort-food',
+        'steak', 'steaks'
+    ],
+    
+    "BREAKFAST_SPECIFIC": [
+        'breakfast-eggs', 'eggs-breakfast', 'eggs-dairy', 'granola-and-porridge',
+        'mashed-potatoes'
+    ],
+    
+    "DESSERT_TYPES": [
+        'candy', 'frozen-desserts', 'gelatin', 'gelatin-fruit', 'lemon-desserts'
+    ],
+    
+    "REGIONAL_US": [
+        'micro-melanesia'
+    ],
+    
+    "CONTEST_SPONSORED": [
+        'queso-for-all', 'ragu-recipe-contest', 'reynolds-wrap'
+    ],
+    
+    "MISC_CATEGORIES": [
+        'cuisine', 'halloween-cakes', 'halloween-cocktails', 'halloween-cupcakes',
+        'main-dish-beef', 'main-dish-chicken', 'main-dish-crock-pot',
+        'meat', 'pasta-rice-and-grains', 'poultry', 'seasonal', 'side-dishes',
+        'vegetables'
+    ]
+}
