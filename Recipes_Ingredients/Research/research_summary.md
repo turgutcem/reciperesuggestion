@@ -46,8 +46,6 @@ We prototyped this using the Haystack framework and a ReAct-style LLM agent:
 
 ## Conclusion
 
-## Conclusion
-
 In summary, our research spanned (a) **LLM state management**, (b) **AI-driven nutrition optimization**, and (c) **agent-based multimodal reasoning**. These explorations were driven by the overarching goal of creating a smart recipe recommendation system that is context-aware and nutrition-savvy.
 
 While not all of these components will be immediately integrated into the application (for instance, the multi-modal nutrition agent and complex macro optimizations are beyond the first scope), each research provides valuable insights:
