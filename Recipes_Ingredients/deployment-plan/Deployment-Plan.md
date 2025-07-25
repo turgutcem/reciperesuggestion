@@ -106,7 +106,7 @@ PostgreSQL + pgvector Extension
 │
 ├── recipes table
 │   ├── id, title, ingredients
-│   ├── instructions
+│   ├── instructions , tags
 │   └── embedding_vector (for similarity)
 │
 └── user_interactions table
