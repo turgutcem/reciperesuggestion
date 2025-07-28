@@ -202,12 +202,6 @@ Data requirements include diverse conversation examples covering different cuisi
 
 Data management will implement strict quality control procedures including conversation flow validation, extraction accuracy verification, and search result relevance assessment. Training datasets will be versioned and tracked through comprehensive metadata including conversation context, user demographics, seasonal timing, and outcome success metrics.
 
-### Model Evaluation Framework
-
-Model evaluation employs both offline metrics using held-out test sets and online A/B testing frameworks that measure real user satisfaction. Offline evaluation focuses on extraction accuracy through manual annotation of sample conversations, search relevance through expert assessment of ingredient-recipe matching, and conversation flow analysis through dialog success metrics.
-
-Online evaluation utilizes A/B testing methodologies comparing current model performance against candidate improvements. Key metrics include user rating distributions, conversation completion rates, recipe selection frequencies, and session duration analysis. Statistical significance testing ensures that observed performance differences reflect genuine improvements rather than random variation.
-
 ### Model Deployment Process
 
 Model deployment follows a carefully orchestrated blue-green deployment strategy that minimizes risk while enabling rapid rollback capabilities. New model versions undergo comprehensive testing in isolated staging environments before gradual production deployment through traffic percentage increases.
