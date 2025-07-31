@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException, Depends, Session
+from fastapi import FastAPI, HTTPException, Depends
+from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from database import get_db
 from chat_service import ChatService
@@ -9,7 +10,7 @@ import logging
 
 app = FastAPI(title="Recipe Chat API")
 
-# Enable CORS for Gradio frontend
+# Enable CORS for Gradio/Streamlit frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:7860", "http://frontend:7860"],

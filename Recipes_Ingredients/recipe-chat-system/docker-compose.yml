@@ -1,0 +1,103 @@
+# ----------------------------------------------------------------------------------
+# Docker Compose – working version (escape $ so Compose doesn’t expand shell vars)
+# ----------------------------------------------------------------------------------
+version: "3.9"
+
+volumes:
+  postgres_data:
+  ollama_data:
+
+networks:
+  recipe_network:
+
+services:
+  # -----------------------------------------------------------------------------
+  # PostgreSQL
+  # -----------------------------------------------------------------------------
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-recipes_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-turgutcem}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - recipe_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # -----------------------------------------------------------------------------
+  # Ollama + model cache
+  # -----------------------------------------------------------------------------
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      set -e
+      echo "🔧 starting ollama serve…"
+      ollama serve &
+      pid=$$!
+
+      # wait until the API responds (max ~30 s)
+      for i in $$(seq 1 30); do
+        if ollama list >/dev/null 2>&1; then break; fi
+        sleep 1
+      done
+      if ! ollama list >/dev/null 2>&1; then
+        echo "💥 ollama never became ready — aborting"; exit 1
+      fi
+
+      if ollama list | grep -q '^llama3.2:3b'; then
+        echo "✅ llama3.2:3b already present; skipping pull"
+      else
+        echo "⬇️  pulling llama3.2:3b…"
+        ollama pull llama3.2:3b
+      fi
+
+      wait $$pid
+    ports:
+      - "11435:11434"   # host → container
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      OLLAMA_NUM_PARALLEL: 2
+      OLLAMA_MAX_LOADED_MODELS: 1
+      OLLAMA_DEBUG: INFO
+    networks:
+      - recipe_network
+
+  # -----------------------------------------------------------------------------
+  # FastAPI backend
+  # -----------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-recipes_db}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-turgutcem}
+
+      OLLAMA_HOST: ollama
+      OLLAMA_PORT: 11434
+      LLAMA_MODEL: llama3.2:3b
+    ports:
+      - "8001:8001"
+    networks:
+      - recipe_network
+    command: >-
+      sh -c "python -m database init_db && uvicorn main:app --host 0.0.0.0 --port 8001 --workers 1"
