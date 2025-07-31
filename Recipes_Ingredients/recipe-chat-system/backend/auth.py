@@ -1,20 +1,24 @@
 from sqlalchemy.orm import Session
-from database import User
+from database import User, get_db
 import bcrypt
 from fastapi import HTTPException, Depends, Request
-from database import get_db
 import uuid
+from typing import Dict, Optional
 
-# Simple in-memory session store
-active_sessions = {}
+# Simple in-memory session store for development
+# In production, use Redis or database sessions
+active_sessions: Dict[str, Dict[str, str]] = {}
 
 def hash_password(password: str) -> str:
+    """Hash a password using bcrypt."""
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def verify_password(password: str, hashed: str) -> bool:
+    """Verify a password against a hash."""
     return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
 
-def create_user(db: Session, email: str, password: str):
+def create_user(db: Session, email: str, password: str) -> User:
+    """Create a new user."""
     # Check if user exists
     existing = db.query(User).filter(User.email == email).first()
     if existing:
@@ -29,23 +33,34 @@ def create_user(db: Session, email: str, password: str):
     
     # Create session
     session_id = str(uuid.uuid4())
-    active_sessions[session_id] = {"user_id": str(user.id), "email": user.email}
+    active_sessions[session_id] = {
+        "user_id": str(user.id), 
+        "email": user.email,
+        "session_id": session_id
+    }
     
     return user
 
-def authenticate_user(db: Session, email: str, password: str):
+def authenticate_user(db: Session, email: str, password: str) -> Optional[Dict[str, str]]:
+    """Authenticate user and return session info."""
     user = db.query(User).filter(User.email == email).first()
     if not user or not verify_password(password, user.hashed_password):
         return None
     
     # Create session
     session_id = str(uuid.uuid4())
-    active_sessions[session_id] = {"user_id": str(user.id), "email": user.email}
+    session_info = {
+        "user_id": str(user.id), 
+        "email": user.email,
+        "session_id": session_id
+    }
+    active_sessions[session_id] = session_info
     
-    return user
+    return session_info
 
-def get_current_user(request: Request):
-    # Simple session check (in production, we'll use proper session management)
+def get_current_user(request: Request) -> Dict[str, str]:
+    """Get current user from session."""
+    # Simple session check (in production, use proper session management)
     session_id = request.headers.get("X-Session-ID")
     if not session_id or session_id not in active_sessions:
         raise HTTPException(status_code=401, detail="Not authenticated")

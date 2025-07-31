@@ -9,6 +9,7 @@ from datetime import datetime
 
 # Database connection using environment variables
 def get_db_connection():
+    """Get raw psycopg2 connection for direct queries."""
     conn = psycopg2.connect(
         dbname=settings.db_name,
         user=settings.db_user,
@@ -20,47 +21,49 @@ def get_db_connection():
     conn.set_client_encoding('UTF8')
     return conn
 
-# SQLAlchemy setup using settings
-engine = create_engine(settings.database_url)
+# SQLAlchemy setup
+engine = create_engine(settings.database_url, echo=False)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 def get_db():
+    """Dependency to get DB session."""
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
 
-# Rest of the models remain the same...
+# Models
 class User(Base):
     __tablename__ = "users"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class Conversation(Base):
     __tablename__ = "conversations"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), index=True)
+    user_id = Column(UUID(as_uuid=True), index=True, nullable=False)
     title = Column(String, default="New Conversation")
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class ChatMessage(Base):
     __tablename__ = "chat_messages"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    conversation_id = Column(UUID(as_uuid=True), index=True)
-    content = Column(Text)
-    is_user = Column(Boolean)
+    conversation_id = Column(UUID(as_uuid=True), index=True, nullable=False)
+    content = Column(Text, nullable=False)
+    is_user = Column(Boolean, nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow)
     extracted_query = Column(Text)  # JSON string
     search_results = Column(Text)   # JSON string
 
-# Create tables (will run once)
+# Create tables
 def create_user_tables():
+    """Create all user-related tables."""
     Base.metadata.create_all(bind=engine)
