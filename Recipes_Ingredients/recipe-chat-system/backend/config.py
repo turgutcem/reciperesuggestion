@@ -1,39 +1,34 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
-import os
 
 class Settings(BaseSettings):
-    # Database Configuration
-    db_host: str = "localhost"
-    db_port: int = 5432
-    db_name: str = "recipes_db"
-    db_user: str = "postgres"
-    db_password: str = "turgutcem"
+    # Database
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5433/recipes_db"
     
-    # Ollama Configuration  
-    ollama_host: str = "localhost"
-    ollama_port: int = 11434
+    # Ollama
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_MODEL: str = "llama3.2:3b"
     
-    # App Configuration
-    secret_key: str = "change-this-secret-key-in-production"
-    app_host: str = "0.0.0.0"
-    app_port: int = 8000
+    # Application
+    APP_NAME: str = "Recipe Chat API"
+    APP_VERSION: str = "0.1.0"
+    DEBUG: bool = True
     
-    # Model Configuration
-    embedding_model: str = "all-MiniLM-L6-v2"
-    llama_model: str = "llama3.2:3b"
+    # Security
+    SECRET_KEY: str = "your-secret-key-change-this-in-production"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
-    class Config:
-        # Look for .env file in project root (parent directory)
-        env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
-        print(env_file)
+    # CORS
+    ALLOWED_ORIGINS: list[str] = ["http://localhost:8501", "http://frontend:8501", "http://localhost:3000"]
     
-    @property
-    def database_url(self) -> str:
-        return f"postgresql://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
+    # Embeddings
+    EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
     
-    @property
-    def ollama_url(self) -> str:
-        return f"http://{self.ollama_host}:{self.ollama_port}"
+    model_config = SettingsConfigDict(
+        env_file="../.env",
+        case_sensitive=True,
+        extra="ignore"  # Ignore extra fields from .env
+    )
 
 settings = Settings()

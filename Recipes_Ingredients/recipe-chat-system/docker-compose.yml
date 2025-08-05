@@ -1,103 +1,106 @@
-# ----------------------------------------------------------------------------------
-# Docker Compose – working version (escape $ so Compose doesn’t expand shell vars)
-# ----------------------------------------------------------------------------------
-version: "3.9"
-
-volumes:
-  postgres_data:
-  ollama_data:
-
-networks:
-  recipe_network:
+version: '3.8'
 
 services:
-  # -----------------------------------------------------------------------------
-  # PostgreSQL
-  # -----------------------------------------------------------------------------
+  # PostgreSQL with pgvector
   postgres:
-    image: postgres:15
-    restart: unless-stopped
+    image: pgvector/pgvector:pg15
+    container_name: recipe_postgres
     environment:
-      POSTGRES_DB: ${DB_NAME:-recipes_db}
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-turgutcem}
+      POSTGRES_DB: recipes_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
+      # Mount database initialization scripts
+      - ./database:/docker-entrypoint-initdb.d
+      # Persist data between container restarts
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - recipe_network
+    ports:
+      - "5433:5432"  # Changed to avoid conflict with our local PostgreSQL
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # -----------------------------------------------------------------------------
-  # Ollama + model cache
-  # -----------------------------------------------------------------------------
+  # Ollama for Llama 3.2
   ollama:
     image: ollama/ollama:latest
-    container_name: ollama
-    restart: unless-stopped
-    entrypoint: ["/bin/sh", "-c"]
-    command: |
-      set -e
-      echo "🔧 starting ollama serve…"
-      ollama serve &
-      pid=$$!
-
-      # wait until the API responds (max ~30 s)
-      for i in $$(seq 1 30); do
-        if ollama list >/dev/null 2>&1; then break; fi
-        sleep 1
-      done
-      if ! ollama list >/dev/null 2>&1; then
-        echo "💥 ollama never became ready — aborting"; exit 1
-      fi
-
-      if ollama list | grep -q '^llama3.2:3b'; then
-        echo "✅ llama3.2:3b already present; skipping pull"
-      else
-        echo "⬇️  pulling llama3.2:3b…"
-        ollama pull llama3.2:3b
-      fi
-
-      wait $$pid
-    ports:
-      - "11435:11434"   # host → container
+    container_name: recipe_ollama
     volumes:
       - ollama_data:/root/.ollama
-    environment:
-      OLLAMA_NUM_PARALLEL: 2
-      OLLAMA_MAX_LOADED_MODELS: 1
-      OLLAMA_DEBUG: INFO
-    networks:
-      - recipe_network
+    ports:
+      - "11434:11434"
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # -----------------------------------------------------------------------------
-  # FastAPI backend
-  # -----------------------------------------------------------------------------
+  # Backend API
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    build: ./backend
+    container_name: recipe_backend
+    env_file: .env  # Use .env file
+    environment:
+      # Override for Docker networking
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/recipes_db
+      OLLAMA_BASE_URL: http://ollama:11434
+      SESSION_STORAGE: memory
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "8001:8000"  # Changed to avoid conflict with my local port 8000
     depends_on:
       postgres:
         condition: service_healthy
       ollama:
-        condition: service_started
-    environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: ${DB_NAME:-recipes_db}
-      DB_USER: ${DB_USER:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-turgutcem}
+        condition: service_healthy
+    volumes:
+      # For development - auto-reload on code changes
+      - ./backend:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
-      OLLAMA_HOST: ollama
-      OLLAMA_PORT: 11434
-      LLAMA_MODEL: llama3.2:3b
+  # Frontend UI
+  frontend:
+    build: ./frontend
+    container_name: recipe_frontend
+    env_file: .env  # Use .env file
+    environment:
+      # Override for Docker networking
+      BACKEND_URL: http://backend:8000
+      STREAMLIT_SERVER_ADDRESS: 0.0.0.0
+      STREAMLIT_SERVER_PORT: 8501
     ports:
-      - "8001:8001"
-    networks:
-      - recipe_network
-    command: >-
-      sh -c "python -m database init_db && uvicorn main:app --host 0.0.0.0 --port 8001 --workers 1"
+      - "8501:8501"
+    depends_on:
+      - backend
+    volumes:
+      # For development - auto-reload on code changes
+      - ./frontend:/app
+
+  # Model loader - runs once to download Llama 3.2
+  model_loader:
+    image: ollama/ollama:latest
+    container_name: recipe_model_loader
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434  # Fixed: was OLLAMA_HOST
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Waiting for Ollama to be ready..."
+        sleep 10
+        echo "Pulling Llama 3.2 model..."
+        ollama pull llama3.2:3b || echo "Model pull failed, but continuing..."
+        echo "Model ready!"
+
+volumes:
+  postgres_data:
+  ollama_data:

@@ -1,89 +1,95 @@
-from fastapi import FastAPI, HTTPException, Depends
-from sqlalchemy.orm import Session
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from database import get_db
-from chat_service import ChatService
-from auth import get_current_user, create_user, authenticate_user
-from pydantic import BaseModel
-from typing import List, Optional
+from contextlib import asynccontextmanager
 import logging
 
-app = FastAPI(title="Recipe Chat API")
+from config import settings
+from database import init_db, check_db_connection
 
-# Enable CORS for Gradio/Streamlit frontend
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO if not settings.DEBUG else logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logger.info("Starting Recipe Chat API...")
+    logger.info(f"Database URL: {settings.DATABASE_URL.split('@')[1]}")  # Log without password
+    logger.info(f"Ollama Base URL: {settings.OLLAMA_BASE_URL}")
+    
+    # Verify database connection (tables created by SQL scripts)
+    try:
+        init_db()
+        logger.info("Database connection verified")
+    except Exception as e:
+        logger.error(f"Failed to connect to database: {e}")
+    
+    # Test connections
+    db_status = check_db_connection()
+    logger.info(f"Database connection: {'✓' if db_status else '✗'}")
+    
+    # TODO: Test Ollama connection
+    # TODO: Load embedding model
+    
+    yield
+    
+    # Shutdown
+    logger.info("Shutting down Recipe Chat API...")
+
+# Create FastAPI app
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    lifespan=lifespan
+)
+
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:7860", "http://frontend:7860"],
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Initialize services
-chat_service = ChatService()
+# Root endpoint
+@app.get("/")
+async def root():
+    return {
+        "message": "Recipe Chat API",
+        "version": settings.APP_VERSION,
+        "status": "running"
+    }
 
-# Request/Response models
-class LoginRequest(BaseModel):
-    email: str
-    password: str
-
-class ChatMessage(BaseModel):
-    message: str
-    conversation_id: Optional[str] = None
-
-class ChatResponse(BaseModel):
-    response: str
-    conversation_id: str
-    recipes: List[dict] = []
-
-# Health check
+# Health check endpoint
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"}
+    # Check database
+    db_healthy = check_db_connection()
+    
+    # TODO: Check Ollama
+    ollama_healthy = False
+    try:
+        import requests
+        response = requests.get(f"{settings.OLLAMA_BASE_URL}/api/tags", timeout=2)
+        ollama_healthy = response.status_code == 200
+    except:
+        pass
+    
+    return {
+        "status": "healthy" if db_healthy else "unhealthy",
+        "services": {
+            "api": "running",
+            "database": "healthy" if db_healthy else "unhealthy",
+            "ollama": "healthy" if ollama_healthy else "unhealthy",
+            "embeddings": "pending"
+        }
+    }
 
-# Authentication endpoints
-@app.post("/auth/login")
-async def login(request: LoginRequest, db: Session = Depends(get_db)):
-    user = authenticate_user(db, request.email, request.password)
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    return {"user_id": user.id, "email": user.email}
-
-@app.post("/auth/register")
-async def register(request: LoginRequest, db: Session = Depends(get_db)):
-    user = create_user(db, request.email, request.password)
-    return {"user_id": user.id, "email": user.email}
-
-# Chat endpoints
-@app.post("/chat/send", response_model=ChatResponse)
-async def send_message(
-    request: ChatMessage,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    response = await chat_service.process_message(
-        user_id=current_user["user_id"],
-        message=request.message,
-        conversation_id=request.conversation_id,
-        db=db
-    )
-    return response
-
-@app.get("/chat/conversations")
-async def get_conversations(
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    return chat_service.get_user_conversations(current_user["user_id"], db)
-
-@app.get("/chat/history/{conversation_id}")
-async def get_conversation_history(
-    conversation_id: str,
-    current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    return chat_service.get_conversation_messages(conversation_id, db)
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host=settings.app_host, port=settings.app_port)
+# API routes will be added here
+# TODO: Include auth router
+# TODO: Include conversations router
+# TODO: Include chat router
