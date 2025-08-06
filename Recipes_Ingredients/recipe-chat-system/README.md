@@ -261,16 +261,6 @@ docker logs recipe_ollama
 docker-compose logs -f backend
 ```
 
-## 📊 Performance
-
-- **Recipe Search**: <500ms for typical queries
-- **Embedding Generation**: ~100ms per query
-- **LLM Extraction**: ~2-3 seconds
-- **Database Size**: ~5GB with all indexes
-- **Memory Usage**: 
-  - Ollama: ~4GB
-  - PostgreSQL: ~1GB
-  - Backend: ~500MB
 
 ## 🤝 Contributing
 
@@ -288,7 +278,7 @@ docker-compose logs -f backend
 
 ## 🙏 Acknowledgments
 
-- Recipe data from RecipeNLG dataset
+- Recipe data from variety of sources but mostly Kaggle datasets explained in the prev sections.
 - Llama 3.2 by Meta
 - Sentence Transformers by UKPLab
 - pgvector extension for PostgreSQL
