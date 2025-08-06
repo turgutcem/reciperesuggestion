@@ -90,17 +90,27 @@ services:
         condition: service_healthy
     volumes:
       - ollama_data:/root/.ollama
-    environment:
-      - OLLAMA_BASE_URL=http://ollama:11434  # Fixed: was OLLAMA_HOST
+    network_mode: "service:ollama"  # Share network with ollama container
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
         echo "Waiting for Ollama to be ready..."
-        sleep 10
-        echo "Pulling Llama 3.2 model..."
-        ollama pull llama3.2:3b || echo "Model pull failed, but continuing..."
-        echo "Model ready!"
-
+        # Wait longer for Ollama to fully start
+        sleep 20
+        
+        # Connect to localhost since we're sharing network
+        export OLLAMA_HOST=http://localhost:11434
+        
+        echo "Checking Ollama status..."
+        ollama list || echo "First check failed, waiting more..."
+        sleep 5
+        
+        echo "Pulling Llama 3.2:3b model..."
+        ollama pull llama3.2:3b || echo "3b variant failed"
+        
+        echo "Checking models..."
+        ollama list
+        echo "Model loader finished!"
 volumes:
   postgres_data:
   ollama_data:

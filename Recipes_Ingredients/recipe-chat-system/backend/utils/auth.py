@@ -1,12 +1,15 @@
+# backend/utils/auth.py
+"""
+Authentication utilities.
+Moved from root auth.py to utils folder.
+"""
 import bcrypt
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import Optional
 
-from database import get_db
 from models import User
-from schemas import UserCreate, UserLogin
-from config import settings
+from schemas import UserCreate
 
 def get_password_hash(password: str) -> str:
     """Hash a password using bcrypt."""
@@ -55,14 +58,3 @@ def get_user_by_id(db: Session, user_id: int) -> Optional[User]:
 def get_user_by_email(db: Session, email: str) -> Optional[User]:
     """Get user by email."""
     return db.query(User).filter(User.email == email).first()
-
-# Simple session management (for now, just return user_id)
-# In production, you'd want proper JWT tokens
-def create_session(user: User) -> dict:
-    """Create a simple session response."""
-    return {
-        "user_id": user.id,
-        "email": user.email,
-        "name": user.name,
-        "message": "Login successful"
-    }

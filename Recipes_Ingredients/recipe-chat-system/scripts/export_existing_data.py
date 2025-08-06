@@ -236,7 +236,7 @@ def create_test_user_data(output_path='database'):
         
         # Create test users (password is 'password' for all)
         # Using bcrypt hash for 'password'
-        test_password_hash = '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/Lewvfmf0ma/SXfYFu'
+        test_password_hash = '$2b$12$zoPTZ./nW9NRRbWDPfmyP.pQHf1egqX.DAfTAIUJyl3YWRVGVA/ti'
         
         test_users = [
             ('test@example.com', 'Test User'),
