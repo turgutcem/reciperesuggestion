@@ -1,0 +1,403 @@
+[
+  {
+    "tag": "breakfast",
+    "turns": [
+      {
+        "user_says": "I'm looking for some new breakfast recipes.",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "breakfast"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "Initial request for breakfast recipes."
+      },
+      {
+        "user_says": "I prefer breakfast recipes that can be made in 30 minutes or less.",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "breakfast",
+            "30-minutes-or-less"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "Request for quick breakfast recipes."
+      },
+      {
+        "user_says": "I'm looking for vegetarian or vegan breakfast recipes.",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "breakfast"
+          ],
+          "tags_or": [
+            [
+              "vegetarian",
+              "vegan"
+            ]
+          ],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "Preference for vegetarian or vegan breakfast recipes."
+      },
+      {
+        "user_says": "Please exclude any recipes with nuts from the breakfast options.",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [
+            "nuts"
+          ],
+          "tags": [
+            "breakfast"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "Request to exclude recipes with nuts from breakfast options."
+      }
+    ]
+  },
+  {
+    "tag": "lunch",
+    "turns": [
+      {
+        "user_says": "I'm looking for some new lunch ideas",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "lunch"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "User is looking for lunch recipes"
+      },
+      {
+        "user_says": "I need something simple and quick",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "lunch",
+            "30-minutes-or-less"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "User wants quick lunch recipes"
+      },
+      {
+        "user_says": "Preferably vegetarian or vegan options",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "lunch",
+            "30-minutes-or-less"
+          ],
+          "tags_or": [
+            [
+              "vegetarian",
+              "vegan"
+            ]
+          ],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "User is interested in vegetarian or vegan lunch recipes"
+      },
+      {
+        "user_says": "No nuts please",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [
+            "nuts"
+          ],
+          "tags": [
+            "lunch",
+            "30-minutes-or-less"
+          ],
+          "tags_or": [
+            [
+              "vegetarian",
+              "vegan"
+            ]
+          ],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "User wants lunch recipes without nuts"
+      }
+    ]
+  },
+  {
+    "tag": "dinner",
+    "turns": [
+      {
+        "user_says": "I'm looking for some dinner recipes",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "dinner"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "User is searching for dinner recipes"
+      },
+      {
+        "user_says": "I need something that can be made in 30 minutes or less",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "dinner",
+            "30-minutes-or-less"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "User wants dinner recipes that can be prepared in 30 minutes or less"
+      },
+      {
+        "user_says": "I prefer vegetarian or vegan options",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "dinner",
+            "vegetarian",
+            "vegan"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "User is interested in vegetarian or vegan dinner recipes"
+      },
+      {
+        "user_says": "Please exclude any recipes with nuts",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [
+            "nuts"
+          ],
+          "tags": [
+            "dinner",
+            "vegetarian",
+            "vegan"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "User does not want any dinner recipes that contain nuts"
+      }
+    ]
+  },
+  {
+    "tag": "vegetarian",
+    "turns": [
+      {
+        "user_says": "I'm looking for some tasty vegetarian recipes",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "vegetarian"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "Set tag to 'vegetarian'"
+      },
+      {
+        "user_says": "Do you have any vegetarian recipes that can be made in under 30 minutes?",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "vegetarian",
+            "30-minutes-or-less"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "Added tag '30-minutes-or-less' to filter for quick recipes"
+      },
+      {
+        "user_says": "I'm open to vegetarian or vegan recipes",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "vegetarian"
+          ],
+          "tags_or": [
+            [
+              "vegetarian",
+              "vegan"
+            ]
+          ],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "Added tag_or for 'vegetarian' and 'vegan' recipes"
+      },
+      {
+        "user_says": "Please exclude any recipes with nuts",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [
+            "nuts"
+          ],
+          "tags": [
+            "vegetarian"
+          ],
+          "tags_or": [
+            [
+              "vegetarian",
+              "vegan"
+            ]
+          ],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "Excluded recipes with nuts"
+      }
+    ]
+  },
+  {
+    "tag": "mexican",
+    "turns": [
+      {
+        "user_says": "I'm craving some Mexican food tonight",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "mexican"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "User expressed interest in Mexican cuisine"
+      },
+      {
+        "user_says": "I need a recipe that can be done in under 30 minutes",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "mexican",
+            "30-minutes-or-less"
+          ],
+          "tags_or": [],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "User requested a quick Mexican recipe"
+      },
+      {
+        "user_says": "I prefer vegetarian or vegan options",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [],
+          "tags": [
+            "mexican"
+          ],
+          "tags_or": [
+            [
+              "vegetarian",
+              "vegan"
+            ]
+          ],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "User specified a preference for vegetarian or vegan Mexican recipes"
+      },
+      {
+        "user_says": "Please exclude any recipes with nuts",
+        "state_after": {
+          "name_or_description": "",
+          "include": [],
+          "include_groups": [],
+          "exclude": [
+            "nuts"
+          ],
+          "tags": [
+            "mexican"
+          ],
+          "tags_or": [
+            [
+              "vegetarian",
+              "vegan"
+            ]
+          ],
+          "exclude_tags": [],
+          "count": 5
+        },
+        "explanation": "User wants Mexican recipes without nuts"
+      }
+    ]
+  }
+]
