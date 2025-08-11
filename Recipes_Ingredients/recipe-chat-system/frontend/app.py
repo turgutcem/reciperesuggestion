@@ -301,8 +301,8 @@ def render_sidebar():
                 with st.form("register_form"):
                     reg_name = st.text_input("Name")
                     reg_email = st.text_input("Email")
-                    reg_password = st.text_input("Password", type="password", min_chars=6)
-                    reg_password_confirm = st.text_input("Confirm Password", type="password", min_chars=6)
+                    reg_password = st.text_input("Password", type="password")  
+                    reg_password_confirm = st.text_input("Confirm Password", type="password")  
                     submit = st.form_submit_button("Register", use_container_width=True)
                     
                     if submit:
@@ -310,7 +310,7 @@ def render_sidebar():
                             st.error("Email and password are required")
                         elif reg_password != reg_password_confirm:
                             st.error("Passwords do not match")
-                        elif len(reg_password) < 6:
+                        elif len(reg_password) < 6:  # Validation is done here instead
                             st.error("Password must be at least 6 characters")
                         else:
                             result = st.session_state.api_client.register(reg_email, reg_password, reg_name)
