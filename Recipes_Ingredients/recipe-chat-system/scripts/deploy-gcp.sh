@@ -92,7 +92,7 @@ gcloud compute instances create $INSTANCE_NAME \
     --accelerator=type=nvidia-tesla-t4,count=1 \
     --boot-disk-size=50GB \
     --boot-disk-type=pd-standard \
-    --image-family=ubuntu-2004-lts \
+    --image-family=ubuntu-2204-lts \
     --image-project=ubuntu-os-cloud \
     --preemptible \
     --max-run-duration=24h \
