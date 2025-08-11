@@ -2,7 +2,7 @@
 # Daily management script for Recipe Chat System on GCP
 # Use this script for starting, stopping, and managing your instance
 
-# Configuration (modify these if needed)
+# Configuration
 PROJECT_ID=${GCP_PROJECT_ID:-"recipe-rag"}
 ZONE=${GCP_ZONE:-"us-central1-a"}
 INSTANCE_NAME=${GCP_INSTANCE_NAME:-"recipe-gpu"}
@@ -53,7 +53,7 @@ case "$1" in
         
         # Wait for instance to be ready
         print_info "Waiting for instance to be ready..."
-        sleep 30
+        sleep 60
         
         # Get external IP
         EXTERNAL_IP=$(gcloud compute instances describe $INSTANCE_NAME \
@@ -75,8 +75,9 @@ case "$1" in
         echo "📱 Access your application at:"
         echo "   Frontend: ${YELLOW}http://$EXTERNAL_IP:8501${NC}"
         echo "   API Docs: ${YELLOW}http://$EXTERNAL_IP:8001/docs${NC}"
+        echo "   Langfuse: ${YELLOW}http://$EXTERNAL_IP:3000${NC}"
         echo ""
-        echo "Note: It may take 1-2 minutes for the application to be fully ready"
+        echo "Note: It may take 2-3 minutes for the application to be fully ready"
         ;;
     
     stop)
@@ -101,7 +102,7 @@ case "$1" in
             gcloud compute instances stop $INSTANCE_NAME --zone=$ZONE --project=$PROJECT_ID
             
             print_status "Instance stopped successfully!"
-            echo "💰 You are now saving \$0.137/hour"
+            echo "💰 You are now saving ~\$0.35/hour"
         fi
         ;;
     
@@ -129,9 +130,10 @@ case "$1" in
         echo "Instance: $INSTANCE_NAME"
         echo "Project: $PROJECT_ID"
         echo "Zone: $ZONE"
+        echo "Machine Type: n1-standard-4 + Tesla T4"
         
         if [ "$STATUS" = "RUNNING" ]; then
-            echo -e "Status: ${GREEN}RUNNING${NC} (costing \$0.137/hour)"
+            echo -e "Status: ${GREEN}RUNNING${NC} (costing ~\$0.35/hour)"
             
             # Get external IP
             EXTERNAL_IP=$(gcloud compute instances describe $INSTANCE_NAME \
@@ -146,11 +148,19 @@ case "$1" in
                 sudo docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
             " 2>/dev/null || print_warning "Could not fetch container status"
             
+            # Check GPU
+            echo ""
+            echo "GPU Status:"
+            gcloud compute ssh $INSTANCE_NAME --zone=$ZONE --project=$PROJECT_ID --command="
+                nvidia-smi --query-gpu=name,memory.used,memory.total,utilization.gpu --format=csv,noheader
+            " 2>/dev/null || print_warning "Could not fetch GPU status"
+            
             # URLs
             echo ""
             echo "📱 Access URLs:"
             echo "   Frontend: http://$EXTERNAL_IP:8501"
             echo "   API Docs: http://$EXTERNAL_IP:8001/docs"
+            echo "   Langfuse: http://$EXTERNAL_IP:3000"
         else
             echo -e "Status: ${YELLOW}$STATUS${NC} (not costing money)"
         fi
@@ -180,6 +190,13 @@ case "$1" in
         echo "📜 Showing Ollama logs..."
         gcloud compute ssh $INSTANCE_NAME --zone=$ZONE --project=$PROJECT_ID --command="
             sudo docker logs recipe_ollama --tail=100 -f
+        "
+        ;;
+    
+    logs-langfuse)
+        echo "📜 Showing Langfuse logs..."
+        gcloud compute ssh $INSTANCE_NAME --zone=$ZONE --project=$PROJECT_ID --command="
+            sudo docker logs recipe_langfuse --tail=100 -f
         "
         ;;
     
@@ -229,6 +246,38 @@ case "$1" in
         fi
         ;;
     
+    langfuse-start)
+        echo "🔍 Starting Langfuse observability..."
+        gcloud compute ssh $INSTANCE_NAME --zone=$ZONE --project=$PROJECT_ID --command="
+            cd ~/reciperesuggestion/Recipes_Ingredients/recipe-chat-system
+            sudo docker-compose -f docker-compose.gpu.yml --profile langfuse up -d
+            echo 'Langfuse starting...'
+            sleep 10
+            sudo docker ps | grep langfuse
+        "
+        
+        EXTERNAL_IP=$(gcloud compute instances describe $INSTANCE_NAME \
+            --zone=$ZONE --project=$PROJECT_ID \
+            --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
+        
+        echo ""
+        print_status "Langfuse UI available at: http://$EXTERNAL_IP:3000"
+        echo "First time setup:"
+        echo "1. Create organization"
+        echo "2. Generate API keys"
+        echo "3. Update .env with keys"
+        echo "4. Restart backend: $0 restart-backend"
+        ;;
+    
+    restart-backend)
+        echo "🔄 Restarting backend..."
+        gcloud compute ssh $INSTANCE_NAME --zone=$ZONE --project=$PROJECT_ID --command="
+            sudo docker restart recipe_backend
+            echo 'Backend restarted'
+            sudo docker logs recipe_backend --tail=20
+        "
+        ;;
+    
     cost)
         echo "💰 Cost Analysis for Recipe Chat System"
         echo "======================================="
@@ -237,24 +286,24 @@ case "$1" in
         STATUS=$(gcloud compute instances describe $INSTANCE_NAME \
             --zone=$ZONE --project=$PROJECT_ID --format='get(status)' 2>/dev/null)
         
-        echo "Instance: $INSTANCE_NAME (e2-standard-4 + Tesla T4)"
+        echo "Instance: $INSTANCE_NAME (n1-standard-4 + Tesla T4)"
         echo ""
         echo "Pricing (Preemptible):"
-        echo "  When RUNNING: \$0.137/hour"
+        echo "  When RUNNING: ~\$0.35/hour"
         echo "  When STOPPED: \$0.00/hour"
         echo "  Disk storage: ~\$2/month (50GB)"
         echo ""
         echo "Cost Scenarios:"
-        echo "  8 hours/day:  \$32.88/month"
-        echo "  12 hours/day: \$49.32/month" 
-        echo "  24 hours/day: \$98.64/month"
+        echo "  8 hours/day:  ~\$84/month"
+        echo "  12 hours/day: ~\$126/month" 
+        echo "  24 hours/day: ~\$252/month"
         echo ""
         
         if [ "$STATUS" = "RUNNING" ]; then
             echo -e "Current Status: ${GREEN}RUNNING${NC}"
-            echo "You are currently being charged \$0.137/hour"
+            echo "You are currently being charged ~\$0.35/hour"
             echo ""
-            echo "💡 Tip: Run './scripts/manage-instance.sh stop' when not using"
+            echo "💡 Tip: Run '$0 stop' when not using"
         else
             echo -e "Current Status: ${YELLOW}STOPPED${NC}"
             echo "You are currently being charged \$0/hour (only disk storage)"
@@ -268,7 +317,7 @@ case "$1" in
             echo 'Pulling latest code...'
             git pull
             echo 'Rebuilding containers...'
-            sudo docker-compose -f docker-compose.gpu.yml build
+            sudo docker-compose -f docker-compose.gpu.yml build backend frontend
             echo 'Restarting services...'
             sudo docker-compose -f docker-compose.gpu.yml down
             sudo docker-compose -f docker-compose.gpu.yml up -d
@@ -290,7 +339,7 @@ case "$1" in
         
         # Download backup to local machine
         print_info "Downloading backup to local machine..."
-        gcloud compute scp $INSTANCE_NAME:/tmp/$BACKUP_FILE ./$BACKUP_FILE --zone=$ZONE
+        gcloud compute scp $INSTANCE_NAME:/tmp/$BACKUP_FILE ./$BACKUP_FILE --zone=$ZONE --project=$PROJECT_ID
         print_status "Backup saved to: ./$BACKUP_FILE"
         ;;
     
@@ -301,29 +350,27 @@ case "$1" in
         echo "Usage: $0 {command}"
         echo ""
         echo "Commands:"
-        echo "  start         - Start the instance and application"
-        echo "  stop          - Stop the instance (save money)"
-        echo "  restart       - Restart the instance and application"
-        echo "  status        - Show current status"
-        echo "  ssh           - SSH into the instance"
-        echo "  logs          - Show all container logs"
-        echo "  logs-backend  - Show only backend logs"
-        echo "  logs-ollama   - Show only Ollama logs"
-        echo "  gpu           - Show GPU status"
-        echo "  test          - Test the API endpoints"
-        echo "  cost          - Show cost analysis"
-        echo "  update        - Update application code"
-        echo "  backup        - Backup the database"
+        echo "  start           - Start the instance and application"
+        echo "  stop            - Stop the instance (save money)"
+        echo "  restart         - Restart the instance and application"
+        echo "  status          - Show current status"
+        echo "  ssh             - SSH into the instance"
+        echo "  logs            - Show all container logs"
+        echo "  logs-backend    - Show only backend logs"
+        echo "  logs-ollama     - Show only Ollama logs"
+        echo "  logs-langfuse   - Show only Langfuse logs"
+        echo "  gpu             - Show GPU status"
+        echo "  test            - Test the API endpoints"
+        echo "  langfuse-start  - Start Langfuse observability"
+        echo "  restart-backend - Restart backend container"
+        echo "  cost            - Show cost analysis"
+        echo "  update          - Update application code"
+        echo "  backup          - Backup the database"
         echo ""
         echo "Configuration:"
         echo "  Project: $PROJECT_ID"
         echo "  Zone: $ZONE"
         echo "  Instance: $INSTANCE_NAME"
-        echo ""
-        echo "To use different settings, set environment variables:"
-        echo "  export GCP_PROJECT_ID=your-project"
-        echo "  export GCP_ZONE=us-central1-a"
-        echo "  export GCP_INSTANCE_NAME=recipe-gpu"
         exit 1
         ;;
 esac

@@ -50,7 +50,7 @@ monitor() {
     while true; do
         show_header
         
-        echo -e "${BLUE}Instance:${NC} $INSTANCE_NAME"
+        echo -e "${BLUE}Instance:${NC} $INSTANCE_NAME (n1-standard-4 + Tesla T4)"
         echo -e "${BLUE}External IP:${NC} $EXTERNAL_IP"
         echo ""
         
@@ -73,6 +73,10 @@ monitor() {
             sudo docker stats --no-stream --format 'table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}' | grep -E 'CONTAINER|recipe'
             
             echo ''
+            echo -e '\033[0;33m=== GPU Memory by Container ===\033[0m'
+            sudo docker exec recipe_ollama nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null && echo 'MB used by Ollama' || echo 'Ollama not using GPU'
+            
+            echo ''
             echo -e '\033[0;33m=== Disk Usage ===\033[0m'
             df -h / | tail -1 | awk '{printf \"Root: %s used of %s (Usage: %s)\\n\", \$3, \$2, \$5}'
             sudo du -sh /var/lib/docker 2>/dev/null | awk '{printf \"Docker: %s\\n\", \$1}'
@@ -81,6 +85,8 @@ monitor() {
         # Test response time
         echo ""
         echo -e "${YELLOW}=== API Response Time ===${NC}"
+        
+        # Health check
         START=$(date +%s%N)
         if curl -s -o /dev/null -w "%{http_code}" http://$EXTERNAL_IP:8001/health | grep -q "200"; then
             END=$(date +%s%N)
@@ -88,6 +94,13 @@ monitor() {
             echo -e "Health Check: ${GREEN}✓${NC} (${DURATION}ms)"
         else
             echo -e "Health Check: ${RED}✗${NC}"
+        fi
+        
+        # Langfuse check
+        if curl -s -o /dev/null -w "%{http_code}" http://$EXTERNAL_IP:3000 | grep -q "200\|302"; then
+            echo -e "Langfuse UI: ${GREEN}✓${NC}"
+        else
+            echo -e "Langfuse UI: ${YELLOW}Not running${NC} (start with: manage-instance.sh langfuse-start)"
         fi
         
         echo ""
@@ -120,8 +133,11 @@ case "$1" in
             echo '=== Docker Containers ==='
             sudo docker ps
             echo ''
-            echo '=== Recent Logs (Backend) ==='
+            echo '=== Recent Backend Activity ==='
             sudo docker logs recipe_backend --tail=10 2>&1 | grep -E 'POST|GET|Error|WARNING' || echo 'No recent activity'
+            echo ''
+            echo '=== Ollama Models ==='
+            sudo docker exec recipe_ollama ollama list 2>/dev/null || echo 'Ollama not ready'
         "
         ;;
     
@@ -134,8 +150,8 @@ case "$1" in
             --zone=$ZONE --project=$PROJECT_ID \
             --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
         
-        echo "Testing Chat API Performance..."
-        echo "==============================="
+        echo "Testing Chat API Performance with GPU..."
+        echo "========================================"
         
         # Test queries
         QUERIES=(
@@ -161,7 +177,7 @@ case "$1" in
             DURATION=$((END - START))
             
             if [ ! -z "$RESPONSE" ]; then
-                RECIPES=$(echo "$RESPONSE" | grep -o '"recipes":\[' | wc -l)
+                RECIPES=$(echo "$RESPONSE" | grep -o '"recipes"' | wc -l)
                 echo -e " - ${GREEN}✓${NC} ${DURATION}s"
                 TOTAL_TIME=$((TOTAL_TIME + DURATION))
                 COUNT=$((COUNT + 1))
@@ -178,14 +194,46 @@ case "$1" in
             echo "  Average response time: ${AVG}s"
             echo "  Total time: ${TOTAL_TIME}s"
             
-            if [ $AVG -lt 10 ]; then
-                echo -e "  Performance: ${GREEN}Excellent${NC} (GPU acceleration working!)"
+            if [ $AVG -lt 5 ]; then
+                echo -e "  Performance: ${GREEN}Excellent${NC} (GPU acceleration working perfectly!)"
+            elif [ $AVG -lt 10 ]; then
+                echo -e "  Performance: ${GREEN}Good${NC} (GPU acceleration working)"
             elif [ $AVG -lt 20 ]; then
-                echo -e "  Performance: ${YELLOW}Good${NC}"
+                echo -e "  Performance: ${YELLOW}Fair${NC} (Check GPU utilization)"
             else
-                echo -e "  Performance: ${RED}Poor${NC} (Check GPU status)"
+                echo -e "  Performance: ${RED}Poor${NC} (GPU may not be working properly)"
             fi
+            
+            # Check GPU utilization during test
+            echo ""
+            echo "Current GPU status:"
+            gcloud compute ssh $INSTANCE_NAME --zone=$ZONE --project=$PROJECT_ID --command="
+                nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader,nounits
+            " 2>/dev/null
         fi
+        ;;
+    
+    gpu-test)
+        # Test GPU functionality
+        echo "🎮 Testing GPU Functionality..."
+        check_instance
+        
+        gcloud compute ssh $INSTANCE_NAME --zone=$ZONE --project=$PROJECT_ID --command="
+            echo '=== NVIDIA Driver Version ==='
+            nvidia-smi --query-gpu=driver_version --format=csv,noheader
+            
+            echo ''
+            echo '=== Testing GPU in Docker ==='
+            sudo docker run --rm --gpus all nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
+            
+            echo ''
+            echo '=== Testing Ollama GPU Access ==='
+            sudo docker exec recipe_ollama nvidia-smi 2>/dev/null && echo 'Ollama has GPU access' || echo 'Ollama cannot access GPU'
+            
+            echo ''
+            echo '=== Ollama Model Info ==='
+            sudo docker exec recipe_ollama ollama list
+        "
         ;;
     
     *)
