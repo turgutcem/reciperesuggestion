@@ -61,8 +61,7 @@ docker-compose --profile langfuse up
 ```
 
 ### GCP Production Deployment Guide
-**File**: [`Recipes_Ingredients/recipe-chat-system/README.md`](./Recipes_Ingredients/recipe-chat-system/README.md) (GCP branch)
-
+**File**: [`Recipes_Ingredients/recipe-chat-system/README.md`](https://github.com/turgutcem/reciperesuggestion/blob/gcp-gpu-deployment/Recipes_Ingredients/recipe-chat-system/README.md) (GCP branch)
 The GCP branch README details:
 - **GPU Acceleration**: NVIDIA Tesla T4 integration for 5-10x faster inference
 - **Authentication System**: Bearer token-based auth with session management
