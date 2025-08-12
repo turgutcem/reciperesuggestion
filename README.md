@@ -1,4 +1,4 @@
-# Recipe Chat System - Master Branch 🍳
+# Recipe Chat System 🍳
 
 ## Table of Contents
 - [0. Introduction](#0-introduction)
